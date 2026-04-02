@@ -33,7 +33,7 @@ async def open_door(db: Session = Depends(get_db), user: User = Depends(get_curr
     state = get_system_state(db)
     if state.is_locked:
         raise HTTPException(status_code=403, detail="Hệ thống đang khóa")
-    await command_open_door()
+    await command_open_door(user.full_name)
     history = History(user_id=user.id, action="open", method="web", success=True)
     db.add(history)
     db.commit()
@@ -63,9 +63,14 @@ async def lock_system(db: Session = Depends(get_db), _=Depends(require_admin)):
 
 @router.post("/unlock")
 async def unlock_system(db: Session = Depends(get_db), _=Depends(require_admin)):
+    print("[Door Router] Unlock system called")
     state = get_system_state(db)
+    print(f"[Door Router] Current lock state: {state.is_locked}")
     state.is_locked = False
     db.commit()
+    print("[Door Router] Database updated, is_locked = False")
     await command_system_unlocked()
+    print("[Door Router] command_system_unlocked() called")
     await notify_system_state(False)
+    print("[Door Router] notify_system_state(False) called")
     return {"message": "Đã mở khóa hệ thống"}

@@ -54,3 +54,12 @@ def seed_data():
 @app.get("/")
 def root():
     return {"message": "SmartDoor API is running"}
+
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "ok",
+        "device_token": DEVICE_TOKEN,
+        "websocket_endpoint": "/ws/device?token=esp32-secret-token"
+    }
