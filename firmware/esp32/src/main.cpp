@@ -8,7 +8,7 @@ const char* WIFI_SSID = "NGUYEN TRUNG THANH";
 const char* WIFI_PASS = "08082004";
 
 // ===== Server Config =====
-const char* SERVER_HOST = "192.168.0.100";  // IP of Python server
+const char* SERVER_HOST = "192.168.0.101";  // IP of Python server
 const int SERVER_PORT = 8000;
 const char* DEVICE_TOKEN = "esp32-secret-token";
 

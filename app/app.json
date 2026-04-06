@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "SmartDoor",
+    "slug": "smartdoor",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {},
+    "extra": {
+      "apiUrl": "http://192.168.0.101:8000/api",
+      "wsUrl": "ws://192.168.0.101:8000/ws"
+    }
+  }
+}

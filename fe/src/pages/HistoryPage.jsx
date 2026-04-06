@@ -25,6 +25,7 @@ export default function HistoryPage() {
           <option value="">Tất cả phương thức</option>
           <option value="rfid">Thẻ RFID</option>
           <option value="web">Web</option>
+          <option value="app">App</option>
         </select>
       </div>
 

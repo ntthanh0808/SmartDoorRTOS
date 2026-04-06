@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 
 from database import get_db
@@ -22,6 +22,13 @@ def get_system_state(db: Session) -> SystemState:
     return state
 
 
+def detect_client_type(user_agent: str = Header(None)) -> str:
+    """Phát hiện client là web hay app dựa vào User-Agent"""
+    if user_agent and "Expo" in user_agent:
+        return "app"
+    return "web"
+
+
 @router.get("/status")
 def door_status(db: Session = Depends(get_db), _=Depends(get_current_user)):
     state = get_system_state(db)
@@ -29,25 +36,40 @@ def door_status(db: Session = Depends(get_db), _=Depends(get_current_user)):
 
 
 @router.post("/open")
-async def open_door(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+async def open_door(
+    db: Session = Depends(get_db), 
+    user: User = Depends(get_current_user),
+    user_agent: str = Header(None)
+):
     state = get_system_state(db)
     if state.is_locked:
         raise HTTPException(status_code=403, detail="Hệ thống đang khóa")
+    
+    client_type = detect_client_type(user_agent)
     await command_open_door(user.full_name)
-    history = History(user_id=user.id, action="open", method="web", success=True)
+    
+    history = History(user_id=user.id, action="open", method=client_type, success=True)
     db.add(history)
     db.commit()
-    await notify_alert(f"{user.full_name} đã mở cửa qua web", "access")
+    
+    await notify_alert(f"{user.full_name} đã mở cửa qua {client_type}", "access")
     return {"message": "Đã gửi lệnh mở cửa"}
 
 
 @router.post("/close")
-async def close_door(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+async def close_door(
+    db: Session = Depends(get_db), 
+    user: User = Depends(get_current_user),
+    user_agent: str = Header(None)
+):
+    client_type = detect_client_type(user_agent)
     await command_close_door()
-    history = History(user_id=user.id, action="close", method="web", success=True)
+    
+    history = History(user_id=user.id, action="close", method=client_type, success=True)
     db.add(history)
     db.commit()
-    await notify_alert(f"{user.full_name} đã đóng cửa qua web", "access")
+    
+    await notify_alert(f"{user.full_name} đã đóng cửa qua {client_type}", "access")
     return {"message": "Đã gửi lệnh đóng cửa"}
 
 

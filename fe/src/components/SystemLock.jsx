@@ -32,7 +32,7 @@ export default function SystemLock({ isLocked, setIsLocked, doorStatus }) {
         {isLocked ? 'Mở khóa hệ thống' : 'Khóa hệ thống'}
       </button>
       {!isDoorClosed && (
-        <p className="text-red-600 text-sm mt-2">Chỉ có thể khóa/mở khóa khi cửa đã đóng</p>
+        <p className="text-red-600 text-sm mt-2">Chỉ có thể khóa/mở hệ thống khi cửa đã đóng</p>
       )}
     </div>
   );
